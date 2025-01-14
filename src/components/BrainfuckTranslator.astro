@@ -1,73 +1,84 @@
 ---
-import TextArea from "./TextArea.astro";
-import Output from "./Output.astro";
+import TextArea from './TextArea.astro'
+import Output from './Output.astro'
+import ExecutionTime from './ExecutionTime.astro'
 ---
 
 <div class="translator">
   <TextArea />
+  <ExecutionTime />
   <Output />
 </div>
 
 <script>
-  const textToBrainfuck = (text: string) => {
-    let output = "";
+  const textToBrainfuck = (text: string): string => {
+    let output = ''
+    let currentValue = 0
 
     for (let i = 0; i < text.length; i++) {
-      const charCode = text.charCodeAt(i);
+      const targetValue = text.charCodeAt(i)
+      const diff = targetValue - currentValue
 
-      const target = charCode;
+      if (diff > 0) {
+        output += '+'.repeat(diff)
+      } else if (diff < 0) {
+        output += '-'.repeat(Math.abs(diff))
+      }
 
-      const baseValue = Math.floor(target / 10) * 10;
-      output += "+".repeat(baseValue / 10);
-      output += "[>++++++++++<-]>";
+      output += '.'
+      currentValue = targetValue
 
-      const remainder = target - baseValue;
-      output += "+".repeat(remainder);
-
-      output += ".";
-
-      output += "[-]<";
-    }
-
-    return output;
-  };
-
-  const input = document.getElementById("input");
-  const translateBtn = document.getElementById("translate-btn");
-  const copyBtn = document.getElementById("copy-btn");
-  const output = document.getElementById("output");
-
-  translateBtn?.addEventListener("click", () => {
-    if (input instanceof HTMLTextAreaElement && output) {
-      const text = input.value;
-      if (text) {
-        const brainfuck = textToBrainfuck(text);
-        output.textContent = brainfuck;
-        output.classList.remove("hidden");
-        copyBtn?.classList.remove("hidden");
+      if (i < text.length - 1) {
+        output += '>'
       }
     }
-  });
 
-  copyBtn?.addEventListener("click", async () => {
+    return output
+  }
+
+  const input = document.getElementById('input')
+  const translateBtn = document.getElementById('translate-btn')
+  const copyBtn = document.getElementById('copy-btn')
+  const output = document.getElementById('output')
+  const executionTime = document.getElementById('execution-time')
+
+  translateBtn?.addEventListener('click', () => {
+    if (input instanceof HTMLTextAreaElement && output) {
+      const text = input.value
+      if (text) {
+        const startTime = performance.now()
+        const brainfuck = textToBrainfuck(text)
+        const endTime = performance.now()
+        const timeTaken = endTime - startTime
+
+        output.textContent = brainfuck
+        output.classList.remove('hidden')
+        copyBtn?.classList.remove('hidden')
+
+        if (executionTime) {
+          executionTime.textContent = `Execution time: ${timeTaken.toFixed(3)} ms`
+          executionTime.classList.remove('hidden')
+        }
+      }
+    }
+  })
+
+  copyBtn?.addEventListener('click', async () => {
     try {
       if (output) {
-        await navigator.clipboard.writeText(output.textContent || "");
+        await navigator.clipboard.writeText(output.textContent || '')
         if (copyBtn) {
-          const originalText = copyBtn.textContent;
-          copyBtn.textContent = "Copied!";
-          const timeout = setTimeout(() => {
-            if (copyBtn) {
-              copyBtn.textContent = originalText;
-              clearTimeout(timeout);
-            }
-          }, 2000);
+          const originalText = copyBtn.textContent
+          copyBtn.textContent = 'Copied!'
+          setTimeout(() => {
+            if (copyBtn) copyBtn.textContent = originalText
+          }, 2000)
         }
       }
     } catch (err) {
-      console.error("Failed to copy:", err);
+      console.error('Failed to copy:', err)
     }
-  });
+  })
 </script>
 
 <style>
