@@ -1,0 +1,80 @@
+---
+import TextArea from "./TextArea.astro";
+import Output from "./Output.astro";
+---
+
+<div class="translator">
+  <TextArea />
+  <Output />
+</div>
+
+<script>
+  const textToBrainfuck = (text: string) => {
+    let output = "";
+
+    for (let i = 0; i < text.length; i++) {
+      const charCode = text.charCodeAt(i);
+
+      const target = charCode;
+
+      const baseValue = Math.floor(target / 10) * 10;
+      output += "+".repeat(baseValue / 10);
+      output += "[>++++++++++<-]>";
+
+      const remainder = target - baseValue;
+      output += "+".repeat(remainder);
+
+      output += ".";
+
+      output += "[-]<";
+    }
+
+    return output;
+  };
+
+  const input = document.getElementById("input");
+  const translateBtn = document.getElementById("translate-btn");
+  const copyBtn = document.getElementById("copy-btn");
+  const output = document.getElementById("output");
+
+  translateBtn?.addEventListener("click", () => {
+    if (input instanceof HTMLTextAreaElement && output) {
+      const text = input.value;
+      if (text) {
+        const brainfuck = textToBrainfuck(text);
+        output.textContent = brainfuck;
+        output.classList.remove("hidden");
+        copyBtn?.classList.remove("hidden");
+      }
+    }
+  });
+
+  copyBtn?.addEventListener("click", async () => {
+    try {
+      if (output) {
+        await navigator.clipboard.writeText(output.textContent || "");
+        if (copyBtn) {
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = "Copied!";
+          const timeout = setTimeout(() => {
+            if (copyBtn) {
+              copyBtn.textContent = originalText;
+              clearTimeout(timeout);
+            }
+          }, 2000);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  });
+</script>
+
+<style>
+  .translator {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+</style>

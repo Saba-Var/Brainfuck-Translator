@@ -1,0 +1,56 @@
+<div class="input-group">
+  <textarea id="input" placeholder="Type your text here..."></textarea>
+
+  <div class="button-group">
+    <button id="translate-btn">Translate to Brainfuck</button>
+    <button id="copy-btn" class="copy-btn hidden">Copy</button>
+  </div>
+</div>
+
+<style>
+  .input-group {
+    margin-bottom: 1rem;
+  }
+
+  textarea {
+    width: 100%;
+    height: 120px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 1rem;
+  }
+
+  button {
+    background: #0066cc;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  button:hover {
+    background: #0052a3;
+  }
+
+  .copy-btn {
+    background: #f0f0f0;
+    color: #333;
+  }
+
+  .copy-btn:hover {
+    background: #e0e0e0;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
